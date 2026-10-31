@@ -1,0 +1,37 @@
+# RHS AI Solutions OS
+
+> Property Intelligence & Operational Compliance OS — a multi-tenant B2B platform built by RHS AI Solutions, a business name of Right Hand Services by JP (Candor, North Carolina).
+
+RHS AI Solutions OS helps property, vegetation and right-of-way management companies run site intelligence and operational compliance from one control center. Each company gets an isolated tenant workspace; screening-level sample audits are complimentary and full audits require an active workspace.
+
+## Features
+
+- **AI site intelligence**: condition audits with turf-health and drainage-flow grading per parcel. Aerial imagery is AI-generated for illustration — it is not satellite, drone or survey data, and audit scores are simulated estimates.
+- **Compliance ledger**: multi-tenant log of vegetation overgrowth, drainage issues and routine audits with severity, resolution status and due dates.
+- **AEO tracker (simulated)**: visibility rank and recommendation snippets are produced by an LLM simulation of AI answer-engine responses (Gemini, ChatGPT, Perplexity) — not live engine queries. Treat them as directional estimates only.
+- **Smart invoicing**: invoice issuance with payment status tracking and revenue analytics.
+- **Tiered SaaS billing**: Free Discovery (5 properties / 1 AEO keyword), Professional at $149/mo (50 / 10), Enterprise at $499/mo (unlimited).
+
+## Who it is for
+
+Commercial property groups, HOA/property managers, municipalities and vegetation-management contractors that need audited site condition data, a shared compliance ledger, and proof of work for invoicing.
+
+## Access
+
+The control center requires signing in with a corporate email (consumer domains are restricted). The public page describes the platform and offers a complimentary screening-level sample audit.
+
+## Brand hierarchy
+
+- Legal entity: **Right Hand Services by JP** — a North Carolina sole proprietorship (no LLC/Inc suffix)
+- Business name (DBA): **RHS AI Solutions**
+- Product: **RHS AI Solutions OS**
+
+## Links
+
+- App: https://app.rhsaisolutions.com/
+- Marketing site: https://rhsaisolutions.com/
+- Sitemap: https://app.rhsaisolutions.com/sitemap.xml
+
+## Contact
+
+Right Hand Services by JP · Candor, NC, United States

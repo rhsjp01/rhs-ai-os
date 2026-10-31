@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// RHS AI SOLUTIONS OS — Property Intelligence & Compliance
+// Multi-tenant B2B SaaS (adapted from Supabase blueprint)
+// ============================================================
+
+// 1. COMPANIES / TENANTS (The B2B subscribers paying for the SaaS)
+model Company {
+  id                 String    @id @default(uuid())
+  name               String
+  stripeCustomerId   String? // holds gateway token / zelle reference notes
+  subscriptionStatus String    @default("free") // free | active | pro_unlocked | enterprise_unlocked | past_due | pending_zelle_audit
+  isDemo             Boolean   @default(false) // seeded demo fixtures — excluded from revenue/conversion rollups
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  users          User[]
+  properties     Property[]
+  invoices       Invoice[]
+  aeoRecords     AeoRecord[]
+  activityEvents ActivityEvent[]
+}
+
+// 2. USERS (Belonging to a company; role gates admin bypass)
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String?
+  role         String   @default("operator") // operator | field_tech | admin
+  companyId    String?
+  company      Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions           Session[]
+  complianceLogsAuth ComplianceLog[] @relation("ComplianceLoggedBy")
+}
+
+// Session tokens (httpOnly cookie auth, DB-backed)
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// 3. PROPERTIES (Site Intelligence & Geospatial Hub)
+model Property {
+  id                    String    @id @default(uuid())
+  companyId             String
+  company               Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name                  String
+  address               String?
+  latitude              Float?
+  longitude             Float?
+  turfConditionScore    Int? // 1-100
+  drainageScore         Int? // 1-100
+  satelliteImageUrl     String? // served via /api/satellite/[id]
+  satelliteLastAnalyzed DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  complianceLogs ComplianceLog[]
+  invoices       Invoice[]
+}
+
+// 4. COMPLIANCE & MAINTENANCE LEDGER
+model ComplianceLog {
+  id               String    @id @default(uuid())
+  propertyId       String
+  property         Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  loggedById       String?
+  loggedBy         User?     @relation("ComplianceLoggedBy", fields: [loggedById], references: [id], onDelete: SetNull)
+  logType          String // vegetation_overgrowth | drainage_issue | routine_audit | ...
+  severity         String? // low | medium | high | critical
+  description      String?
+  resolutionStatus String    @default("pending") // pending | scheduled | resolved
+  dueDate          DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// 5. TRADE WORKFLOW & INVOICES (Financial tracking layer)
+model Invoice {
+  id            String    @id @default(uuid())
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  propertyId    String?
+  property      Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  invoiceNumber String
+  amount        Float
+  status        String    @default("draft") // draft | sent | paid | overdue
+  issuedDate    DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// 6. LOCAL DIRECTORY & AEO TRACKING (AI search visibility layer)
+model AeoRecord {
+  id                      String   @id @default(uuid())
+  companyId               String
+  company                 Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  engineName              String // Gemini AI | ChatGPT | Perplexity
+  keyword                 String
+  searchVisibilityRank    Int? // rank index inside AI-generated summaries; null = not cited
+  aiRecommendationSnippet String?
+  lastCrawledAt           DateTime @default(now())
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+// 7. ACTIVITY EVENTS (conversion alerts, automation log — replaces n8n notifications)
+model ActivityEvent {
+  id        String   @id @default(uuid())
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  type      String // tier_upgrade | payment | audit | aeo_sync | zelle | system | compliance | invoice
+  title     String
+  message   String
+  createdAt DateTime @default(now())
+}
