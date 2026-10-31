@@ -1,0 +1,16 @@
+.env
+.env.*
+db/*.db
+db/satellite/
+node_modules/
+.next/
+tool-results/
+upload/
+.env
+.env.*
+db/*.db
+db/satellite/
+node_modules/
+.next/
+tool-results/
+upload/
